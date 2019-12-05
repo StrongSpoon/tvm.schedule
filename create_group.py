@@ -16,6 +16,6 @@ print(tvm.lower(s, [A, B, E], simple_mode=True))
 print("---------cutting line---------")
 
 g = s.create_group(outputs = E, inputs = [A, B], include_inputs=True)
-g.compute_at(s[F], F.op.axis[0])
+g.compute_at(s[F], F.op.reduce_axis[0])
 
 print(tvm.lower(s, [A, B, E], simple_mode=True))
