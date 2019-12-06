@@ -1,7 +1,7 @@
 import tvm
 
-n = 256
-m = 256
+n = tvm.var('n')
+m = tvm.var('m')
 A = tvm.placeholder((n, m), name='A')
 B = tvm.placeholder((n, m), name='B')
 C = tvm.compute((n, m), lambda i, j: A[i, j] + B[i, j], name='C')
