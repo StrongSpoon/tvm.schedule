@@ -1,8 +1,6 @@
 import tvm
 
 n = 1024
-factor =100
-offset =8
 dtype = "float32"
 A = tvm.placeholder((n, n), dtype=dtype, name='A')
 k = tvm.reduce_axis((0, n), name='k')
