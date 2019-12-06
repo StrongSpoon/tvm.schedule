@@ -13,4 +13,3 @@ print("---------cutting line---------")
 
 s[B].prefetch(A, s[B].op.reduce_axis[0], 1)
 print(tvm.lower(s, [A, B], simple_mode=True))
-exit(0)

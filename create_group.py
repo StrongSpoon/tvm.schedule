@@ -1,6 +1,6 @@
 import tvm
 
-n = tvm.var("n")
+n = 1024
 k = tvm.reduce_axis((0, n), name='k')
 
 A = tvm.placeholder((n, n), name='A')

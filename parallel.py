@@ -14,4 +14,3 @@ print("---------cutting line---------")
 
 s[B].parallel(B.op.reduce_axis[0])
 print(tvm.lower(s, [A, B], simple_mode=True))
-exit(0)

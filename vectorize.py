@@ -12,7 +12,7 @@ C = tvm.compute(
            name='C')
 
 s = tvm.create_schedule(C.op)
-xo, yo, xi, yi = s[C].tile(C.op.axis[0], C.op.axis[1], 16, 16)
+xo, yo, xi, yi = s[C].tile(C.op.axis[0], C.op.axis[1], 32, 32)
 
 print(tvm.lower(s, [A, B, C], simple_mode=True))
 print("---------cutting line---------")
@@ -20,4 +20,3 @@ print("---------cutting line---------")
 s[C].vectorize(yi)
 
 print(tvm.lower(s, [A, B, C], simple_mode=True))
-exit(0)

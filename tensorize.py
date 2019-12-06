@@ -30,8 +30,6 @@ x, y = C.op.axis
 z, = C.op.reduce_axis
 yo, yi = s[C].split(y, factor=factor)
 s[C].reorder(x, yo, yi, z)
-#print(tvm.lower(s, [A, B, C], simple_mode=True))
-#exit(0)
 
 gemv = intrin_gemv(factor, L)
 
@@ -41,4 +39,3 @@ print("---------cutting line---------")
 s[C].tensorize(yi, gemv)
 
 print(tvm.lower(s, [A, B, C], simple_mode=True))
-exit(0)

@@ -1,10 +1,9 @@
 import tvm
 
-n = tvm.var('n')
-m = tvm.var('m')
-A = tvm.placeholder((n, m), name='A')
-B = tvm.placeholder((n, m), name='B')
-C = tvm.compute((n, m), lambda i, j: A[i, j] + B[i, j], name='C')
+n = 1024
+A = tvm.placeholder((n, n), name='A')
+B = tvm.placeholder((n, n), name='B')
+C = tvm.compute((n, n), lambda i, j: A[i, j] + B[i, j], name='C')
 
 s = tvm.create_schedule(C.op)
 

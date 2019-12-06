@@ -1,8 +1,8 @@
 import tvm
 
-n = tvm.var('n')
-k = tvm.var('k')
-pad = tvm.var('pad')
+n = 1024
+k = 3
+pad = 2
 A = tvm.placeholder((n, n), name='A')
 W = tvm.placeholder((k, k), name='W')
 m = (n - k + 2 * pad) + 1

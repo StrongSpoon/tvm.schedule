@@ -1,7 +1,7 @@
 import tvm
 
-n = tvm.var("n")
-m = tvm.var("m")
+n = 1024
+m = 1024
 A = tvm.placeholder((n, m), name='A')
 k = tvm.reduce_axis((0, n), name='k')
 l = tvm.reduce_axis((0, m), name = 'l')
@@ -18,4 +18,3 @@ print("---------cutting line---------")
 s[B].pragma(ki, "unroll")
 
 print(tvm.lower(s, [A, B], simple_mode=True))
-exit(0)
