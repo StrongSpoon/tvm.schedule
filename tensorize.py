@@ -1,29 +1,28 @@
 import tvm
 
 N, M, L = 1024, 512, 64
-A = tvm.placeholder((N, L), name='A')
-B = tvm.placeholder((M, L), name='B')
-k = tvm.reduce_axis((0, L), name='k')
-C = tvm.compute((N, M), lambda i, j: tvm.sum(A[i, k] * B[j, k], axis=k), name='C')
-s = tvm.create_schedule(C.op)
+A = tvm.te.placeholder((N, L), name='A')
+B = tvm.te.placeholder((M, L), name='B')
+k = tvm.te.reduce_axis((0, L), name='k')
+C = tvm.te.compute((N, M), lambda i, j: tvm.te.sum(A[i, k] * B[j, k], axis=k), name='C')
+s = tvm.te.create_schedule(C.op)
 
 def intrin_gemv(m, l):
-    a = tvm.placeholder((l,), name='a')
-    b = tvm.placeholder((m, l), name='b')
-    k = tvm.reduce_axis((0, l), name='k')
-    c =  tvm.compute((m,), lambda i: tvm.sum(a[k] * b[i, k], axis=k), name='c')
-    Abuf = tvm.decl_buffer(a.shape, a.dtype, name='A', offset_factor=1, strides=[1])
-    Bbuf = tvm.decl_buffer(b.shape, b.dtype, name='B', offset_factor=1, strides=[tvm.var("s1"), 1])
-    Cbuf = tvm.decl_buffer(c.shape, c.dtype, name='C', offset_factor=1, strides=[1])
-    
+    a = tvm.te.placeholder((l,), name='a')
+    b = tvm.te.placeholder((m, l), name='b')
+    k = tvm.te.reduce_axis((0, l), name='k')
+    c =  tvm.te.compute((m,), lambda i: tvm.te.sum(a[k] * b[i, k], axis=k), name='c')
+    Abuf = tvm.tir.decl_buffer(a.shape, a.dtype, name='A', offset_factor=1, strides=[1])
+    Bbuf = tvm.tir.decl_buffer(b.shape, b.dtype, name='B', offset_factor=1, strides=[tvm.te.var("s1"), 1])
+    Cbuf = tvm.tir.decl_buffer(c.shape, c.dtype, name='C', offset_factor=1, strides=[1])
     def intrin_func(ins, outs):
-        ib = tvm.ir_builder.create()
+        ib = tvm.tir.ir_builder.create()
         aa, bb = ins
         cc = outs[0]
-        ib.emit(tvm.call_extern("int32", "gemv_update", cc.access_ptr("w"), aa.access_ptr("r"), bb.access_ptr("r"), m, l, bb.strides[0]))
+        ib.emit(tvm.tir.call_extern("int32", "gemv_update", cc.access_ptr("w"), aa.access_ptr("r"), bb.access_ptr("r"), m, l, bb.strides[0]))
         return ib.get()
-    with tvm.build_config(offset_factor=1):
-        return tvm.decl_tensor_intrin(c.op, intrin_func, binds={a: Abuf, b: Bbuf, c: Cbuf})
+    with tvm.relay.build_config(opt_level=1):
+        return tvm.te.decl_tensor_intrin(c.op, intrin_func, binds={a: Abuf, b: Bbuf, c: Cbuf})
 
 factor = 16
 x, y = C.op.axis
